@@ -175,7 +175,6 @@ static long procfs_lifo_ioctl(struct file *file, unsigned int cmd, unsigned long
 	        pr_err("procfs_lifo_ioctl failure\n");
 	    }
 	    break;
-	case 
 	default:
 	    break;
     }
