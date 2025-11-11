@@ -1,0 +1,11 @@
+# Kernel build outputs
+**/*.o
+**/*.o.*
+**/*.mod
+**/*.mod.*
+**/*.ko
+**/*.ko.*
+**/*.symvers
+**/*.symvers.*
+**/*.order
+**/*.order.*
