@@ -47,12 +47,12 @@ class ProcfsLifoTester : public benchmark::Fixture {
 
 using ProcfsLifoTester_u8_10k = ProcfsLifoTester<uint8_t, 10000>;
 
-BENCHMARK_DEFINE_F(ProcfsLifoTester_u8_10k, WriteBench)(benchmark::State &state) {
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench, uint8_t, 10000)(benchmark::State& state) {
 	for (auto _ : state) {
 		this->WriteLifo();
 		benchmark::ClobberMemory();
 	}
 }
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench)->Arg(0)->ThreadRange(1, 1);
 
-BENCHMARK_REGISTER_F(ProcfsLifoTester_u8_10k, WriteBench)->Arg(0)->ThreadRange(1, 1);
 BENCHMARK_MAIN();
