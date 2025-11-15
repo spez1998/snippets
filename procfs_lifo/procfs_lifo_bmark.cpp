@@ -11,7 +11,6 @@ class ProcfsLifoTester : public benchmark::Fixture {
   public:
     void SetUp(const benchmark::State &state) override {
         bool prewrite{state.range(0) == 1 ? true : false};
-        std::system("insmod kernel/procfs_lifo.ko");
         if ((fd_ = open("/proc/suj/procfs_lifo", O_RDWR)) < 0) {
 			std::system("rmmod procfs_lifo");
             throw std::runtime_error("Couldn't open proc file");
@@ -26,7 +25,6 @@ class ProcfsLifoTester : public benchmark::Fixture {
 
     void TearDown(const benchmark::State &state) override {
         close(fd_);
-        std::system("rmmod procfs_lifo");
     }
 
     void WriteLifo() { write(fd_, userbuf_->data(), S*sizeof(T)); }
@@ -45,14 +43,12 @@ class ProcfsLifoTester : public benchmark::Fixture {
     std::unique_ptr<std::array<T, S>> userbuf_;
 };
 
-using ProcfsLifoTester_u8_10k = ProcfsLifoTester<uint8_t, 10000>;
-
-BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench, uint8_t, 10000)(benchmark::State& state) {
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench10000, uint8_t, 10000)(benchmark::State& state) {
 	for (auto _ : state) {
 		this->WriteLifo();
 		benchmark::ClobberMemory();
 	}
 }
-BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench)->Arg(0)->ThreadRange(1, 1);
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench10000)->Arg(0)->ThreadRange(1, 1);
 
 BENCHMARK_MAIN();

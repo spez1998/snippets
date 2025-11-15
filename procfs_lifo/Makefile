@@ -1,17 +1,30 @@
 CXX      := g++
 CXXFLAGS := -O3 -std=c++20 -march=native -Wall -Wextra -Wpedantic
-# CXXFLAGS := -g -std=c++20 -Wall -Wextra -Wpedantic
+LDLIBS   := -lbenchmark -lpthread
 
-LDLIBS := -lbenchmark -lpthread
+BENCH_SRC := procfs_lifo_bmark.cpp
+BENCH_BIN := bench.out
 
-SRC := procfs_lifo_bmark.cpp
-BIN := bench.out
+KERNEL_DIR := kernel
+KDIR := /lib/modules/$(shell uname -r)/build
 
-$(BIN): $(SRC)
+.PHONY: all bench kmod clean clean-bench clean-kmod
+
+all: bench kmod
+
+bench: $(BENCH_BIN)
+
+$(BENCH_BIN): $(BENCH_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDLIBS)
 
-clean:
-	rm -f $(BIN)
+kmod:
+	$(MAKE) -C $(KDIR) M=$(shell pwd)/$(KERNEL_DIR) modules
 
-.PHONY: clean
+clean: clean-bench clean-kmod
+
+clean-bench:
+	rm -f $(BENCH_BIN)
+
+clean-kmod:
+	$(MAKE) -C $(KDIR) M=$(shell pwd)/$(KERNEL_DIR) clean
 
