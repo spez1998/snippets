@@ -29,15 +29,15 @@ class ProcfsLifoTester : public benchmark::Fixture {
         std::system("rmmod procfs_lifo");
     }
 
-    void WriteLifo() { write(fd_, userbuf_->data(), S); }
-    void ReadLifo() { read(fd_, userbuf_->data(), S); }
+    void WriteLifo() { write(fd_, userbuf_->data(), S*sizeof(T)); }
+    void ReadLifo() { read(fd_, userbuf_->data(), S*sizeof(T)); }
 
   private:
     void FillUserbufRandom() {
         std::mt19937 mt{std::random_device{}()};
-        std::uniform_int_distribution dst{0, 255};
+        std::uniform_int_distribution<T> dst{0, 255};
         for (size_t i{0}; i < S; ++i) {
-            userbuf_.get()->at(i) = dst(mt);
+			(*userbuf_)[i] = dst(mt);
         }
     }
 
@@ -47,7 +47,7 @@ class ProcfsLifoTester : public benchmark::Fixture {
 
 using ProcfsLifoTester_u8_10k = ProcfsLifoTester<uint8_t, 10000>;
 
-BENCHMARK_F(ProcfsLifoTester_u8_10k, WriteBench)(benchmark::State &state) {
+BENCHMARK_DEFINE_F(ProcfsLifoTester_u8_10k, WriteBench)(benchmark::State &state) {
 	for (auto _ : state) {
 		this->WriteLifo();
 		benchmark::ClobberMemory();
