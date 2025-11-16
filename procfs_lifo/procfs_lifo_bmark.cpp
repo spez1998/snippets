@@ -1,10 +1,12 @@
 #include <array>
 #include <benchmark/benchmark.h>
+#include <chrono>
 #include <fcntl.h>
 #include <memory>
 #include <random>
 #include <stdexcept>
 #include <sys/ioctl.h>
+#include <thread>
 #include <unistd.h>
 
 #include "kernel/procfs_lifo_meminfo.h"
@@ -52,12 +54,52 @@ template <typename T, size_t S> class ProcfsLifoTester : public benchmark::Fixtu
     std::unique_ptr<std::array<T, S>> userbuf_;
 };
 
-BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench10000, uint8_t, 10000)(benchmark::State &state) {
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench10, uint8_t, 10)(benchmark::State &state) {
     for (auto _ : state) {
         this->WriteLifo();
         benchmark::ClobberMemory();
     }
 }
-BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench10000)->Arg(0)->ThreadRange(1, 1)->Iterations(1000);
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench10)->Arg(0)->ThreadRange(1, 1);
+
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench100, uint8_t, 100)(benchmark::State &state) {
+    for (auto _ : state) {
+        this->WriteLifo();
+        benchmark::ClobberMemory();
+    }
+}
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench100)->Arg(0)->ThreadRange(1, 1);
+
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench1_000, uint8_t, 1'000)(benchmark::State &state) {
+    for (auto _ : state) {
+        this->WriteLifo();
+        benchmark::ClobberMemory();
+    }
+}
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench1_000)->Arg(0)->ThreadRange(1, 1);
+
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench10_000, uint8_t, 10'000)(benchmark::State &state) {
+    for (auto _ : state) {
+        this->WriteLifo();
+        benchmark::ClobberMemory();
+    }
+}
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench10_000)->Arg(0)->ThreadRange(1, 1);
+
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench100_000, uint8_t, 100'000)(benchmark::State &state) {
+    for (auto _ : state) {
+        this->WriteLifo();
+        benchmark::ClobberMemory();
+    }
+}
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench100_000)->Arg(0)->ThreadRange(1, 1);
+
+BENCHMARK_TEMPLATE_DEFINE_F(ProcfsLifoTester, WriteBench1_000_000, uint8_t, 1'000'000)(benchmark::State &state) {
+    for (auto _ : state) {
+        this->WriteLifo();
+        benchmark::ClobberMemory();
+    }
+}
+BENCHMARK_REGISTER_F(ProcfsLifoTester, WriteBench1_000_000)->Arg(0)->ThreadRange(1, 1);
 
 BENCHMARK_MAIN();
