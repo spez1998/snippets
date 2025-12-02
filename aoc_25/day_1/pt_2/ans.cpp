@@ -13,8 +13,10 @@ void get_input(const char* fname, std::vector<std::string>& ir) {
 	}
 }
 
+// Integer division 
+
 int main(int argc, char** argv) {
-	constexpr int dial_size{99};
+	constexpr int dial_size{100};
 
 	std::vector<std::string> ir;
 
@@ -25,20 +27,29 @@ int main(int argc, char** argv) {
 	
 	for (auto& i : ir) {
 		int gross_distance{std::stoi(i.substr(1, std::string::npos))};
-		int net_distance{gross_distance % (dial_size + 1)};
+		int net_distance{gross_distance % (dial_size)};
+
+		sum_of_zeroes += (gross_distance / (dial_size));
 
 		switch (i[0]) {
 			case 'L':
-				current_loc = (((dial_size + 1) - net_distance) + current_loc) % (dial_size + 1);
+				if (current_loc == 0) {
+					current_loc = 100;
+				}
+				if ((current_loc - net_distance) <= 0) {
+					sum_of_zeroes++;
+				}
+
+				current_loc = (((dial_size) - net_distance) + current_loc) % (dial_size);
 				break;
 
 			case 'R':
-				current_loc = (current_loc + net_distance) % (dial_size + 1);
-				break;
-		}
+				if ((current_loc + net_distance) >= (dial_size)) {
+					sum_of_zeroes++;
+				}
 
-		if (current_loc == 0) {
-			sum_of_zeroes++;
+				current_loc = (current_loc + net_distance) % (dial_size);
+				break;
 		}
 	}
 
